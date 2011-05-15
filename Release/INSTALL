@@ -1,0 +1,38 @@
+Basic Installation
+==================
+
+   The "configure" shell script attempts to guess correct values for various system-dependent variables used during 
+compilation.  It uses those values to create a "Makefile" in each directory of the package. Finally, it creates a 
+shell script "config.status" that you can run in the future to recreate the current configuration, a file 
+"config.cache" that saves the results of its tests to speed up reconfiguring, and a file `config.log' containing 
+compiler output (useful mainly for debugging "configure").
+
+   If you need to do unusual things to compile the package, please try to figure out how `configure' could check 
+whether to do them, and mail diffs or instructions to the address given in the `README' so they can be considered for 
+the next release. If at some point `config.cache' contains results you don't want to keep, you may remove or edit it.
+
+The simplest way to compile this package is:
+
+1. "cd" to the directory containing the package's source code and type "./configure" to configure the package for your 
+system. Running `configure' can take a while.  While running, it prints some messages telling which features it is 
+checking for.
+
+2. Type "make" to compile the package.
+
+3. Optionally, type `make check' to run the package self-tests.
+
+4. Type `make install' to install the programs and any data files and documentation.
+
+5. You can remove the program binaries and object files from the source code directory by typing "make clean". To also 
+remove the files that "configure" created (so you can compile the package for a different kind of computer), type 
+"make distclean"
+
+Configure Options
+==================
+
+-h / -? / --help 		| Print this message
+-v / --version			| Display the program version
+-c FILE / --cache-file=FILE 	| Use and save the results of the tests in FILE instead of the default "config.cache"
+-q / --quiet			| Disable test results. Equivalent to "-c /dev/null"
+-s / --silent			| Disable all output.
+-p PATH / --prefix=PATH		| "make install" installs files to PATH rather than the root directory
