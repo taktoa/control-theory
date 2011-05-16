@@ -34,7 +34,7 @@ mutation :: [Chromosome] -> GConfig -> IO [Chromosome]
 mutation chrom cfg = do
         let mRange = mutationRange cfg
         let mweight = mutationWeight cfg
-        loc1' <- randomInt (0, fromIntegral (length chrom) - 1)
+        loc1' <- randomInt (0, fromIntegral (length chrom))
         loc2' <- randomInt (1, fromIntegral (length chrom))
         putStrLn "a"
         mutagen <- randomDouble (0, 1/mweight)
@@ -42,8 +42,7 @@ mutation chrom cfg = do
         dRand <- randomDouble (-mRange, mRange)
         putStrLn "c"
         let rbool = (mutagen * mweight) > 0.5
-        let loc1 = fromIntegral loc1'::Int
-        let loc2 = fromIntegral loc2'::Int
+        let (loc1, loc2) = (fromIntegral loc1, fromIntegral loc2)
         let rand = (loc1', dRand)
         let mutated = mutation' rand (chrom !! loc1)
         let output = take loc2 chrom ++ (mutated : drop loc2 chrom)
