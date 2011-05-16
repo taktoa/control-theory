@@ -84,15 +84,20 @@ chromsToPop :: [Chromosome] -> GConfig -> Population
 chromsToPop chroms cfg = zip chroms (map (fitnessFunc cfg) chroms)
 
 makeInitChroms' :: GConfig -> [Chromosome] -> Integer -> IO [Chromosome]
-makeInitChroms' _ _ 0 = return []
+makeInitChroms' _ xs 0 = return xs
 makeInitChroms' cfg chroms x = do
-            let popSize = fromIntegral (populationSize cfg)
-            let range = geneRange cfg
             rlist <- randomDoubleList popSize range
+            --randomFlush
             makeInitChroms' cfg (zipWith (:) rlist chroms) (x - 1)
+            where
+            GConfig _ _ _ _ pop _ range _ = cfg
+            popSize = fromIntegral pop
 
 makeInitChroms :: GConfig -> IO [Chromosome]
-makeInitChroms cfg = makeInitChroms' cfg [] (genesPerChromosome cfg)
+makeInitChroms cfg = makeInitChroms' cfg (replicate popsize []) gpc
+            where
+            gpc = genesPerChromosome cfg
+            popsize = fromIntegral (populationSize cfg)
 
 generation :: GConfig -> [Chromosome] -> IO [Chromosome]
 generation cfg chroms = do
@@ -109,7 +114,9 @@ runGen' cfg iters chrom = generation cfg chrom >>= runGen' cfg (iters - 1)
 runGen :: Integer -> GConfig -> IO Chromosome
 runGen iters cfg = do
             initchroms <- (makeInitChroms cfg)
-            pop <- runGen' cfg iters initchroms
-            let spop = (ksort snd (chromsToPop pop cfg))
-            putStrLn "a"
+            chroms <- runGen' cfg iters initchroms
+            let spop = (ksort snd (chromsToPop chroms cfg))
+            print initchroms
+            print chroms
+            print spop
             return (fst (head spop))

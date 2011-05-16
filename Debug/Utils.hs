@@ -38,6 +38,9 @@ randomDoubleList size range = do
             let randInfList = randomRs range stdGen
             return (take size randInfList)
 
+randomFlush :: IO ()
+randomFlush = newStdGen >>= setStdGen
+
 avg :: (Num a, Fractional a) => a -> a -> a
 avg x y = (x + y)/2
 
