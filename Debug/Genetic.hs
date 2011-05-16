@@ -42,7 +42,7 @@ mutation chrom cfg = do
         dRand <- randomDouble (-mRange, mRange)
         putStrLn "c"
         let rbool = (mutagen * mweight) > 0.5
-        let (loc1, loc2) = (fromIntegral loc1, fromIntegral loc2)
+        let (loc1, loc2) = (fromIntegral loc1', fromIntegral loc2')
         let rand = (loc1', dRand)
         let mutated = mutation' rand (chrom !! loc1)
         let output = take loc2 chrom ++ (mutated : drop loc2 chrom)
