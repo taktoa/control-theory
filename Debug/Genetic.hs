@@ -26,7 +26,7 @@ arithCrossover :: Chromosome -> Chromosome -> Chromosome
 arithCrossover = zipWith avg
 
 mutation' :: (RandomInt, RandomDouble) -> Chromosome -> Chromosome
-mutation' (x, y) z = take (a - 1) z ++ (((z !! a) + y) : drop (a + 1) z)
+mutation' (x, y) z = replace z a y
     where
     a = fromIntegral x
 
