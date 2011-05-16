@@ -60,25 +60,24 @@ crossover pop cfg = do
             return (if rand == 1 then chromsToPop (crossover' n (popToChroms filledIn)) cfg else pop)
 
 fillInPop :: Population -> GConfig -> IO Population
-fillInPop [] cfg = do
-                    initchroms <- makeInitChroms cfg
-                    return (chromsToPop initchroms cfg)
+fillInPop [] cfg = makeInitChroms cfg >>= chromsToPop_ cfg
 fillInPop pop cfg
         | popSize == neededSize         = return pop
         | popSize < neededSize          = return lessThan
         | popSize > neededSize          = return greaterThan
         where
         greaterThan = take neededSize sortedPop
-        lessThan = take neededSize (replicate (neededSize - popSize) (head sortedPop) ++ sortedPop)
+        lessThan = replicate (neededSize - popSize) (head sortedPop) ++ sortedPop
         sortedPop = ksort snd pop
-        neededSize = populationSize cfg
-        popSize = length pop
+        (neededSize, popSize) = (populationSize cfg, length pop)
 
 popToChroms :: Population -> [Chromosome]
 popToChroms = map fst
 
 chromsToPop :: [Chromosome] -> GConfig -> Population
 chromsToPop chroms cfg = zip chroms (map (fitnessFunc cfg) chroms)
+
+chromsToPop_ cfg chroms = return (chromsToPop chroms cfg)
 
 makeInitChroms' :: GConfig -> [Chromosome] -> Int -> IO [Chromosome]
 makeInitChroms' _ xs 0 = return xs
