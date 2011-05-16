@@ -25,8 +25,8 @@ data GConfig = GConfig  {    fitnessFunc :: Chromosome -> Fitness,
 arithCrossover :: Chromosome -> Chromosome -> Chromosome
 arithCrossover = zipWith avg
 
-mutation' :: (RandomInt, RandomDouble) -> Chromosome -> Chromosome
-mutation' (x, y) z = replace z a y
+mutation' :: (RandomInt, RandomDouble) -> Chromosome -> IO Chromosome
+mutation' (x, y) z = return (replace a y z)
     where
     a = fromIntegral x
 
@@ -35,17 +35,14 @@ mutation chrom cfg = do
         let mRange = mutationRange cfg
         let mweight = mutationWeight cfg
         loc1' <- randomInt (0, fromIntegral (length chrom))
-        loc2' <- randomInt (1, fromIntegral (length chrom))
-        putStrLn "a"
+        loc2' <- randomInt (0, fromIntegral (length chrom) - 1)
         mutagen <- randomDouble (0, 1/mweight)
-        putStrLn "b"
         dRand <- randomDouble (-mRange, mRange)
-        putStrLn "c"
         let rbool = (mutagen * mweight) > 0.5
         let (loc1, loc2) = (fromIntegral loc1', fromIntegral loc2')
-        let rand = (loc1', dRand)
-        let mutated = mutation' rand (chrom !! loc1)
-        let output = take loc2 chrom ++ (mutated : drop loc2 chrom)
+        let rand = (loc2, dRand)
+        mutated <- mutation' rand (chrom !! loc1)
+        let output = replace loc2 mutated chrom
         return (if rbool then output else chrom)
 
 selection :: [Chromosome] -> GConfig -> Population
@@ -75,7 +72,7 @@ fillInPop pop cfg
         | popSize > neededSize          = return greaterThan
         where
         greaterThan = take neededSize sortedPop
-        lessThan = replicate (neededSize - popSize) (head sortedPop) ++ sortedPop
+        lessThan = take neededSize (replicate (neededSize - popSize) (head sortedPop) ++ sortedPop)
         sortedPop = ksort snd pop
         neededSize = fromIntegral (populationSize cfg)
         popSize = fromIntegral (length pop)
@@ -114,4 +111,5 @@ runGen iters cfg = do
             initchroms <- (makeInitChroms cfg)
             pop <- runGen' cfg iters initchroms
             let spop = (ksort snd (chromsToPop pop cfg))
+            putStrLn "a"
             return (fst (head spop))

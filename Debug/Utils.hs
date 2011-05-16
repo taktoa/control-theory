@@ -49,7 +49,8 @@ ksort = Data.List.Key.sort
 comp :: [a] -> Int -> ([a], a, [a])
 comp x i
     | i < 0             = error "Index less than zero!"
-    | i >= length x     = error "Index greater than list length!"
+    | i > length x      = error "Index greater than list length!"
+    | i == length x     = (a, last a, [])
     | otherwise         = (a, head b, tail b)
     where
     (a, b) = splitAt i x
@@ -57,10 +58,18 @@ comp x i
 decomp :: ([a], a, [a]) -> [a]
 decomp (a, b, c) = a ++ [b] ++ c
 
-replace :: [a] -> Int -> a -> [a]
-replace x i new = decomp (a, new, b)
-        where
-        (a, _, b) = comp x i
+--replace :: [a] -> Int -> a -> [a]
+--replace x i new = decomp (a, new, b)
+--        where
+--        (a, _, b) = comp x i
+
+replace n x
+    | n < 0         = error "Index less than zero!"
+    | otherwise     = go n []
+    where
+    go 0 ys (_:xs) = reverse ys ++ x : xs
+    go n ys (y:xs) = (go $! n-1) (y:ys) xs
+    go _ _ [] = error "Index greater than list length!"
 
 nan = read "NaN"::Double
 

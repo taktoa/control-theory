@@ -14,20 +14,20 @@ import Test.QuickCheck
 -- Coverage excludes: penult, neck, random*,
 ------------------------------------------------------------------------
 
-propGroupsInv n xs = concat (groups n xs) == xs
+propGroupsInv (n, xs) = concat (groups n xs) == xs
 
 --propSetIdem n xs = set (xs !! (fromIntegral n)) n xs == xs
 
 propAvgIdem x = x `avg` x == x
 
-propAverageUpperLimit xs = average xs < ((head . sort) xs)
-propAverageLowerLimit xs = average xs > ((last . sort) xs)
+propAverageUpperLimit xs = not (null xs) ==> average xs < ((head . sort) xs)
+propAverageLowerLimit xs = not (null xs) ==> average xs > ((last . sort) xs)
 
 propKeySortIdem x = not (null x) ==> ksort (id) (ksort (id) x) == x
 
 propKeySortSort x = not (null x) ==> ksort (id) x == sort x
 
-propCompInv n xs = (n >= 0 && n < length xs) ==> decomp (comp xs n) == xs
+propCompInv (n, xs) = (n >= 0 && n < length xs) ==> decomp (comp xs n) == xs
 
 propDecompLen (xs, y, zs) = decomp (xs, y, zs) == (y:xs ++ zs)
 
@@ -35,7 +35,7 @@ geneticTest :: IO ()
 geneticTest = do
         let iters = 10000
         let ffunc x = (head x + 5)**2
-        let (sweight, mweight, cweight) = (0.05, 0.001, 0.7)
+        let (sweight, mweight, cweight) = (0.05, 0, 0.7)
         let (popsize, gpc, grange) = (15, 1, (-8, -2))
         let gcfg = GConfig ffunc sweight mweight cweight popsize gpc grange 5
         outchrom <- runGen iters gcfg
