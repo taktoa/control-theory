@@ -116,7 +116,4 @@ runGen iters cfg = do
             initchroms <- (makeInitChroms cfg)
             chroms <- runGen' cfg iters initchroms
             let spop = (ksort snd (chromsToPop chroms cfg))
-            print initchroms
-            print chroms
-            print spop
             return (fst (head spop))
