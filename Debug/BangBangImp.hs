@@ -25,29 +25,33 @@ bangFitness iters scfg bcfg = average (map theta (bangSim scfg bcfg iters))
 bangGenetic :: SConfig -> IO DBConfig
 bangGenetic scfg = do
         let (sWeight, mWeight, cWeight) = (0.05, 0.01, 0.7)
-        let (bIters, gIters) = (200, 300)
-        let chromToBConfig (a:b:c:_) = BConfig a b c
-        let fitness = bangFitness bIters scfg . chromToBConfig
-        let (popSize, gpc) = (20, 12)
-        let (gr, mr) = ((0, 2), 2)
-        let gcfg = GConfig fitness sWeight mWeight cWeight popSize gpc gr mr
+            (bIters, gIters) = (200, 300)
+            chromToBConfig (a:b:c:_) = BConfig a b c
+            fitness = bangFitness bIters scfg . chromToBConfig
+            (popSize, gpc) = (20, 12)
+            (gr, mr) = ((0, 2), 2)
+            gcfg = GConfig fitness sWeight mWeight cWeight popSize gpc gr mr
         outchrom <- runGen gIters gcfg
         return (chromToBConfig outchrom)
 
 runBangSim :: IO ()
 runBangSim = do
         let initState = SState 0 0 0.1 0 0 0
-        let scfg = protoConfig (0.125, 1, 1, 2, 10, initState)
-        let bIters = 300
+            scfg = protoConfig (0.125, 1, 1, 2, 10, initState)
+            bIters = 300
         bcfg <- bangGenetic scfg
+        putStrLn "a"
         let bang = bangSim scfg bcfg bIters
-        let fitness = bangFitness bIters scfg bcfg
-        let disp = (average (map theta bang))
+            fitness = bangFitness bIters scfg bcfg
+            disp = (average (map theta bang))
         args <- getArgs
+        putStrLn "b"
         let fitnessFile:trackFile:_ = args
         fitnessHandle <- openFile fitnessFile WriteMode
         hPutStr fitnessHandle (show disp ++ ", " ++ show fitness ++ ", \"" ++ show bcfg ++ "\", ")
         hClose fitnessHandle
+        putStrLn "c"
         trackHandle <- openFile trackFile WriteMode
-        hPrint fitnessHandle bang
+        hPrint trackHandle bang
         hClose trackHandle
+        putStrLn "d"

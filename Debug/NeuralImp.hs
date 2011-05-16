@@ -44,15 +44,15 @@ makeTransfer x
 neuralGenetic :: SConfig -> IO NConfig
 neuralGenetic scfg = do
         let (sWeight, mWeight, cWeight) = (0.05, 0.01, 0.7)
-        let (nIters, gIters) = (200, 500)
+            (nIters, gIters) = (200, 500)
         let chromToNConfig (x:y:z) = NConfig weights transfer
                 where
                 transfer = makeTransfer x y
                 weights = groups 5 z
         let fitness = neuralFitness nIters scfg . chromToNConfig
-        let (popSize, gpc) = (20, 12)
-        let (gr, mr) = ((0, 2), 2)
-        let gcfg = GConfig fitness sWeight mWeight cWeight popSize gpc gr mr
+            (popSize, gpc) = (20, 12)
+            (gr, mr) = ((0, 2), 2)
+            gcfg = GConfig fitness sWeight mWeight cWeight popSize gpc gr mr
         outchrom <- runGen gIters gcfg
         putStr "Fitness: "
         print (fitness outchrom)
@@ -61,6 +61,6 @@ neuralGenetic scfg = do
 runNeuralSim :: IO ()
 runNeuralSim = do
         let initState = SState 0 0 0.1 0 0 0
-        let scfg = protoConfig (0.125, 1, 1, 2, 10, initState)
+            scfg = protoConfig (0.125, 1, 1, 2, 10, initState)
         ncfg <- neuralGenetic scfg
         print (map stateTuple (filter (\x -> abs (w x) < 40) (neuralSim scfg ncfg 300)))
