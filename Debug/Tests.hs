@@ -18,12 +18,12 @@ propGroupsInv (n, xs) = concat (groups n xs) == xs
 
 propAvgIdem x = x `avg` x == x
 
-propAverageUpperLimit xs = not (null xs) ==> average xs < ((head . sort) xs)
-propAverageLowerLimit xs = not (null xs) ==> average xs > ((last . sort) xs)
+propAverageUpperLimit xs = not (null xs) ==> average xs < (head . sort) xs
+propAverageLowerLimit xs = not (null xs) ==> average xs > (last . sort) xs
 
-propKeySortIdem x = not (null x) ==> ksort (id) (ksort (id) x) == x
+propKeySortIdem x = not (null x) ==> ksort id (ksort id x) == x
 
-propKeySortSort x = not (null x) ==> ksort (id) x == sort x
+propKeySortSort x = not (null x) ==> ksort id x == sort x
 
 propCompInv (n, xs) = (n >= 0 && n < length xs) ==> decomp (comp xs n) == xs
 
@@ -130,6 +130,6 @@ neuralTest = do
         let gcfg = GConfig ffunc sweight mweight cweight popsize gpc grange mrange
         outchrom <- runGen iters gcfg
         let xfer = transfer (take 2 outchrom)
-        let ncfg = NConfig (groups (gpc - 2) `div` 2) (drop 2 outchrom)) xfer
+        let ncfg = NConfig (groups (gpc - 2) `div` 2) (drop 2 outchrom) xfer
         print (map (\n -> head (evaluate ncfg [n])) template)
         print ncfg
