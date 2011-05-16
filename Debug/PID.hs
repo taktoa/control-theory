@@ -1,13 +1,10 @@
 module PID where
 import Utils
 
-data PConfig a = PConfig {      propWeight :: Double,
+data PConfig = PConfig   {      propWeight :: Double,
                                 integralWeight :: Double,
                                 derivWeight :: Double,
-                                timeStep :: Double,
-                                function :: Double -> a -> a,
-                                toInput :: a -> Double,
-                                setPoint :: a
+                                timeStep :: Double
                          }
 
 instance (Show a) => Show (PConfig a) where
@@ -33,7 +30,9 @@ runPID iters cfg = pid initErr iters cfg
     initErr = [set, set]
     set = setPoint cfg
 
-pEvaluate :: PConfig a -> a -> a
-pEvaluate pcfg input = f (p + i + d)
+pEvaluate :: PConfig -> PState -> PState
+pEvaluate pcfg state = PState current int deriv (p + i + d)
     where
-    PConfig pW iW dW
+    PConfig pW iW dW step = pcfg
+    PState current int deriv _ = state
+    (p, i, d) = (pW * current, iW * int, dW * deriv)
