@@ -13,7 +13,7 @@ data PConfig a = PConfig {      integralWeight :: Double,
 instance (Show a) => Show (PConfig a) where
     show (PConfig i d p t _ _ s) = show ((i, d, p), (t, s))
 
-pid :: [a] -> Integer -> PConfig a -> [a]
+pid :: [a] -> Int -> PConfig a -> [a]
 pid _ 0 _ = []
 pid err n cfg = f (derivative + integral + proportional) (head err) : pid err (n - 1) cfg
     where
@@ -27,7 +27,7 @@ pid err n cfg = f (derivative + integral + proportional) (head err) : pid err (n
     integral = sum inp * k_i
     proportional = k_p * head inp
 
-runPID :: Integer -> PConfig a -> [a]
+runPID :: Int -> PConfig a -> [a]
 runPID iters cfg = pid initErr iters cfg
     where
     initErr = [set, set]

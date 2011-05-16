@@ -16,8 +16,8 @@ data GConfig = GConfig  {    fitnessFunc :: Chromosome -> Fitness,
                              selectionWeight :: Double,
                              mutationWeight :: Double,
                              crossoverWeight :: Double,
-                             populationSize :: Integer,
-                             genesPerChromosome :: Integer,
+                             populationSize :: Int,
+                             genesPerChromosome :: Int,
                              geneRange :: (Double, Double),
                              mutationRange :: Double
                         }
@@ -25,26 +25,22 @@ data GConfig = GConfig  {    fitnessFunc :: Chromosome -> Fitness,
 arithCrossover :: Chromosome -> Chromosome -> Chromosome
 arithCrossover = zipWith avg
 
-mutation' :: (RandomInt, RandomDouble) -> Chromosome -> IO Chromosome
-mutation' (x, y) z = return (replace a y z)
-    where
-    a = fromIntegral x
+mutation' :: (RandomInt, RandomDouble) -> Chromosome -> Chromosome
+mutation' (x, y) z = replace' z x y
 
 mutation :: [Chromosome] -> GConfig -> IO [Chromosome]
-mutation chrom cfg = do
-        let mRange = mutationRange cfg
-        let mweight = mutationWeight cfg
-        loc1' <- randomInt (0, fromIntegral (length chrom))
-        loc2' <- randomInt (0, fromIntegral (length chrom) - 1)
+mutation chroms cfg = do
+        geneLoc <- randomInt (0, gpc)
+        popLoc <- randomInt (0, length chroms - 1)
         mutagen <- randomDouble (0, 1/mweight)
-        dRand <- randomDouble (-mRange, mRange)
+        dRand <- randomDouble (-mrange, mrange)
         let rbool = (mutagen * mweight) > 0.5
-        let (loc1, loc2) = (fromIntegral loc1', fromIntegral loc2')
-        let rand = (loc2, dRand)
-        mutated <- mutation' rand (chrom !! loc1)
-        let output = replace loc2 mutated chrom
+        let mutated = mutation' (geneLoc, dRand) (chroms !! popLoc)
+        let output = replace' chroms popLoc mutated
         randomFlush
-        return (if rbool then output else chrom)
+        return (if rbool then output else chroms)
+        where
+        GConfig _ _ mweight _ _ gpc _ mrange = cfg
 
 selection :: [Chromosome] -> GConfig -> Population
 selection chroms cfg = take (round (k * fromIntegral (length pop))) (ksort snd pop)
@@ -52,7 +48,7 @@ selection chroms cfg = take (round (k * fromIntegral (length pop))) (ksort snd p
     k = selectionWeight cfg
     pop = chromsToPop chroms cfg
 
-crossover' :: Integer -> [Chromosome] -> [Chromosome]
+crossover' :: Int -> [Chromosome] -> [Chromosome]
 crossover' 0 _ = []
 crossover' n (a:b:c) = arithCrossover a b : crossover' (n - 1) c
 
@@ -61,7 +57,7 @@ crossover pop cfg = do
             filledIn <- fillInPop pop cfg
             rand <- randomInt (0, 1)
             let n = length filledIn `div` 2
-            return (if rand == 1 then chromsToPop (crossover' (fromIntegral n) (popToChroms filledIn)) cfg else pop)
+            return (if rand == 1 then chromsToPop (crossover' n (popToChroms filledIn)) cfg else pop)
 
 fillInPop :: Population -> GConfig -> IO Population
 fillInPop [] cfg = do
@@ -75,8 +71,8 @@ fillInPop pop cfg
         greaterThan = take neededSize sortedPop
         lessThan = take neededSize (replicate (neededSize - popSize) (head sortedPop) ++ sortedPop)
         sortedPop = ksort snd pop
-        neededSize = fromIntegral (populationSize cfg)
-        popSize = fromIntegral (length pop)
+        neededSize = populationSize cfg
+        popSize = length pop
 
 popToChroms :: Population -> [Chromosome]
 popToChroms = map fst
@@ -84,21 +80,19 @@ popToChroms = map fst
 chromsToPop :: [Chromosome] -> GConfig -> Population
 chromsToPop chroms cfg = zip chroms (map (fitnessFunc cfg) chroms)
 
-makeInitChroms' :: GConfig -> [Chromosome] -> Integer -> IO [Chromosome]
+makeInitChroms' :: GConfig -> [Chromosome] -> Int -> IO [Chromosome]
 makeInitChroms' _ xs 0 = return xs
 makeInitChroms' cfg chroms x = do
-            rlist <- randomDoubleList popSize range
+            rlist <- randomDoubleList pop range
             randomFlush
             makeInitChroms' cfg (zipWith (:) rlist chroms) (x - 1)
             where
             GConfig _ _ _ _ pop _ range _ = cfg
-            popSize = fromIntegral pop
 
 makeInitChroms :: GConfig -> IO [Chromosome]
-makeInitChroms cfg = makeInitChroms' cfg (replicate popsize []) gpc
+makeInitChroms cfg = makeInitChroms' cfg (replicate pop []) gpc
             where
-            gpc = genesPerChromosome cfg
-            popsize = fromIntegral (populationSize cfg)
+            GConfig _ _ _ _ pop gpc _ _ = cfg
 
 generation :: GConfig -> [Chromosome] -> IO [Chromosome]
 generation cfg chroms = do
@@ -108,11 +102,11 @@ generation cfg chroms = do
             fillIn <- (fillInPop crossedover cfg)
             return (popToChroms fillIn)
 
-runGen' :: GConfig -> Integer -> [Chromosome] -> IO [Chromosome]
+runGen' :: GConfig -> Int -> [Chromosome] -> IO [Chromosome]
 runGen' cfg 0 chroms = return chroms
 runGen' cfg iters chrom = generation cfg chrom >>= runGen' cfg (iters - 1)
 
-runGen :: Integer -> GConfig -> IO Chromosome
+runGen :: Int -> GConfig -> IO Chromosome
 runGen iters cfg = do
             initchroms <- (makeInitChroms cfg)
             chroms <- runGen' cfg iters initchroms

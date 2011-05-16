@@ -3,11 +3,11 @@ import System.Random
 import System
 import Data.List.Key (sort)
 
-type RandomInt = Integer
+type RandomInt = Int
 type RandomDouble = Double
-type RandomIntList = [Integer]
+type RandomIntList = [Int]
 type RandomDoubleList = [Double]
-type RandomIntRange = (Integer, Integer)
+type RandomIntRange = (Int, Int)
 type RandomDoubleRange = (Double, Double)
 
 groups :: Int -> [a] -> [[a]]
@@ -51,9 +51,8 @@ ksort = Data.List.Key.sort
 
 comp :: [a] -> Int -> ([a], a, [a])
 comp x i
-    | i < 0             = error "Index less than zero!"
-    | i > length x      = error "Index greater than list length!"
-    | i == length x     = (a, last a, [])
+    | i < 0             = error "Utils.comp: index less than zero"
+    | i >= length x     = error "Utils.comp: index too high"
     | otherwise         = (a, head b, tail b)
     where
     (a, b) = splitAt i x
@@ -61,10 +60,10 @@ comp x i
 decomp :: ([a], a, [a]) -> [a]
 decomp (a, b, c) = a ++ [b] ++ c
 
---replace :: [a] -> Int -> a -> [a]
---replace x i new = decomp (a, new, b)
---        where
---        (a, _, b) = comp x i
+replace' :: [a] -> Int -> a -> [a]
+replace' x i new = decomp (a, new, b)
+        where
+        (a, _, b) = comp x i
 
 replace n x
     | n < 0         = error "Index less than zero!"

@@ -16,8 +16,6 @@ import Test.QuickCheck
 
 propGroupsInv (n, xs) = concat (groups n xs) == xs
 
---propSetIdem n xs = set (xs !! (fromIntegral n)) n xs == xs
-
 propAvgIdem x = x `avg` x == x
 
 propAverageUpperLimit xs = not (null xs) ==> average xs < ((head . sort) xs)
@@ -54,7 +52,7 @@ utilTest = do
         y <- randomDouble (0, 1)
         print y
         a <- randomIntList 100 (0, 1)
-        let b = fromIntegral (sum a) / 100
+        let b = sum a / 100
         putStr "This should be about 0.5: "
         print b
         c <- randomDoubleList 100 (0, 1)
@@ -132,6 +130,6 @@ neuralTest = do
         let gcfg = GConfig ffunc sweight mweight cweight popsize gpc grange mrange
         outchrom <- runGen iters gcfg
         let xfer = transfer (take 2 outchrom)
-        let ncfg = NConfig (groups ((fromIntegral gpc - 2) `div` 2) (drop 2 outchrom)) xfer
+        let ncfg = NConfig (groups (gpc - 2) `div` 2) (drop 2 outchrom)) xfer
         print (map (\n -> head (evaluate ncfg [n])) template)
         print ncfg
