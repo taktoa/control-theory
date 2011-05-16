@@ -1,9 +1,9 @@
 module PID where
 import Utils
 
-data PConfig a = PConfig {      integralWeight :: Double,
+data PConfig a = PConfig {      propWeight :: Double,
+                                integralWeight :: Double,
                                 derivWeight :: Double,
-                                propWeight :: Double,
                                 timeStep :: Double,
                                 function :: Double -> a -> a,
                                 toInput :: a -> Double,
@@ -32,3 +32,8 @@ runPID iters cfg = pid initErr iters cfg
     where
     initErr = [set, set]
     set = setPoint cfg
+
+pEvaluate :: PConfig a -> a -> a
+pEvaluate pcfg input = f (p + i + d)
+    where
+    PConfig pW iW dW
