@@ -32,16 +32,19 @@ mutation' (x, y) z = replace z a y
 
 mutation :: [Chromosome] -> GConfig -> IO [Chromosome]
 mutation chrom cfg = do
-        let a = mutationRange cfg
+        let mRange = mutationRange cfg
         let mweight = mutationWeight cfg
-        loc' <- randomInt (0, fromIntegral (length chrom) - 1)
+        loc' <- randomInt (0, fromIntegral (length chrom))
+        putStrLn "a"
         mutagen <- randomDouble (0, 1/mweight)
-        dRand <- randomDouble (-a, a)
+        putStrLn "b"
+        dRand <- randomDouble (-mRange, mRange)
+        putStrLn "c"
         let rbool = (mutagen * mweight) > 0.5
         let loc = fromIntegral loc'::Int
         let rand = (loc', dRand)
         let mutated = mutation' rand (chrom !! loc)
-        let output = take (loc + 1) chrom ++ (mutated : drop (loc + 1) chrom)
+        let output = take loc chrom ++ (mutated : drop loc chrom)
         return (if rbool then output else chrom)
 
 selection :: [Chromosome] -> GConfig -> Population
