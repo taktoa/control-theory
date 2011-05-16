@@ -6,6 +6,7 @@ set output "./TEST.png"
 plot "./temp.csv" using 1:2 title "x" with line, \
 "./temp.csv" using 1:3 title "theta" with line, \
 "./temp.csv" using 1:4 title "v" with line, \
-"./temp.csv" using 1:5 title "w" with line
+"./temp.csv" using 1:5 title "w" with line, \
+"./temp.csv" using 1:6 title "F" with line
 set terminal x11
 replot
