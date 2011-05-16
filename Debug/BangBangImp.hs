@@ -22,14 +22,14 @@ bangSim scfg bcfg iters = map fst (take iters (iterate (evalSim bcfg) initSystem
 bangFitness :: Int -> SConfig -> DBConfig -> Fitness
 bangFitness iters scfg bcfg = average (map theta (bangSim scfg bcfg iters))
 
-bangGenetic :: SConfig -> IO DBConfig
+bangGenetic :: SConfig -> IO DBConfig                                   -- I've traced the runtime <<loop>> to this function
 bangGenetic scfg = do
         let (sWeight, mWeight, cWeight) = (0.05, 0.01, 0.7)
             (bIters, gIters) = (200, 300)
-            chromToBConfig (a:b:c:_) = BConfig a b c
-            fitness = bangFitness bIters scfg . chromToBConfig
-            (popSize, gpc) = (20, 12)
-            (gr, mr) = ((0, 2), 2)
+            chromToBConfig (a:b:c:_) = BConfig a b c                    -- Which means it likely has to do with this line
+            fitness = bangFitness bIters scfg . chromToBConfig          -- or this one.
+            (popSize, gpc) = (20, 12)                                   -- The others are mostly innocuous lines
+            (gr, mr) = ((0, 2), 2)                                      -- that I've tested many many times.
             gcfg = GConfig fitness sWeight mWeight cWeight popSize gpc gr mr
         outchrom <- runGen gIters gcfg
         return (chromToBConfig outchrom)
@@ -46,7 +46,7 @@ runBangSim = do
         args <- getArgs
         let fitnessFile:trackFile:_ = args
         fitnessHandle <- openFile fitnessFile WriteMode
-        hPutStr fitnessHandle (show disp ++ ", " ++ show fitness ++ ", \"" ++ show bcfg ++ "\", ") -- <<loop>> originates here
+        hPutStr fitnessHandle (show disp ++ ", " ++ show fitness ++ ", \"" ++ show bcfg ++ "\", ")
         hClose fitnessHandle
         trackHandle <- openFile trackFile WriteMode
         hPrint trackHandle bang
