@@ -25,7 +25,7 @@ bangFitness iters scfg bcfg = average (map theta (bangSim scfg bcfg iters))
 bangGenetic :: SConfig -> IO DBConfig
 bangGenetic scfg = do
         let (sWeight, mWeight, cWeight) = (0.05, 0.01, 0.7)
-        let (bIters, gIters) = (500, 500)
+        let (bIters, gIters) = (200, 500)
         let chromToBConfig (a:b:c:_) = BConfig a b c
         let fitness = bangFitness bIters scfg . chromToBConfig
         let (popSize, gpc) = (20, 12)
