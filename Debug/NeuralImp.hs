@@ -21,7 +21,6 @@ neuralSim scfg ncfg iters = map fst (take iters (iterate (evalSim ncfg) initSyst
 neuralFitness :: Int -> SConfig -> NConfig -> Fitness
 neuralFitness iters scfg ncfg = average (map theta (neuralSim scfg ncfg iters))
 
-
 threshold, sigma, linear :: Double -> Transfer
 
 threshold x y = if y > x then 1 else 0
@@ -45,7 +44,7 @@ makeTransfer x
 neuralGenetic :: SConfig -> IO NConfig
 neuralGenetic scfg = do
         let gcfg = GConfig
-        let (sWeight, mWeight, cWeight) = (0.05, 0.01, 0.7)
+        let (sWeight, mWeight, cWeight) = (0.05, 0.0, 0.7)
         let (nIters, gIters) = (1000, 800)
         let chromToNConfig (x:y:z) = NConfig weights transfer
                 where
