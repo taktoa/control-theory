@@ -52,11 +52,11 @@ utilTest = do
         y <- randomDouble (0, 1)
         print y
         a <- randomIntList 100 (0, 1)
-        let b = sum a / 100
+        let b = average (map fromIntegral a)
         putStr "This should be about 0.5: "
         print b
         c <- randomDoubleList 100 (0, 1)
-        let d = sum c / 100
+        let d = average c
         putStr "This should be about 0.5: "
         print d
         let e = (zip [9,8..1] (replicate 9 0))
@@ -102,34 +102,3 @@ pidTest = do
         hPutStr errorHandle (show error)
         hClose errorHandle
         putStrLn "Worked."
-
-neuralTest = do
-        let e = 2.71828183
-        let sigmoid a b = 1 / (1 + e**(a - b))
-        let ramp a b
-                | b < (a - 0.5)         = 0
-                | b > (a + 0.5)         = 1
-                | otherwise             = (b - a + 0.5)
-        let threshold a b
-                | b > a                 = 1
-                | otherwise             = 0
-        let template = [0,(pi/10)..(2*pi)]
-        let transfer [x, y]
-                | z == 0        = sigmoid x
-                | z == 1        = ramp x
-                | z == 2        = threshold x
-                | otherwise     = sigmoid x
-                where
-                z = round (y * 2)
-        let ffunc (x:y:zs) = average (map (\n -> head (evaluate (NConfig (groups 2 zs) xfer) [n]) - sin n) template)
-                    where
-                    xfer = transfer [x, y]
-        let (iters, mrange) = (1000, 1)
-        let (sweight, mweight, cweight) = (0.05, 0.001, 0.7)
-        let (popsize, gpc, grange) = (15, 10, (0, 1))
-        let gcfg = GConfig ffunc sweight mweight cweight popsize gpc grange mrange
-        outchrom <- runGen iters gcfg
-        let xfer = transfer (take 2 outchrom)
-        let ncfg = NConfig (groups (gpc - 2) `div` 2) (drop 2 outchrom) xfer
-        print (map (\n -> head (evaluate ncfg [n])) template)
-        print ncfg
