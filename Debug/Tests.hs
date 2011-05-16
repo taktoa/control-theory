@@ -1,7 +1,5 @@
--- TODO
--- Work on fuzzyTest
-
 module Tests where
+import Data.List (sort)
 import Utils
 import Genetic
 import Simulation
@@ -9,6 +7,29 @@ import Neural
 import PID
 import System
 import System.IO
+import Test.QuickCheck
+
+------------------------------------------------------------------------
+-- Utils Tests
+-- Coverage excludes: penult, neck, random*,
+------------------------------------------------------------------------
+
+propGroupsInv n xs = concat (groups n xs) == xs
+
+--propSetIdem n xs = set (xs !! (fromIntegral n)) n xs == xs
+
+propAvgIdem x = x `avg` x == x
+
+propAverageUpperLimit xs = average xs < ((head . sort) xs)
+propAverageLowerLimit xs = average xs > ((last . sort) xs)
+
+propKeySortIdem x = not (null x) ==> ksort (id) (ksort (id) x) == x
+
+propKeySortSort x = not (null x) ==> ksort (id) x == sort x
+
+propCompInv n xs = (n >= 0 && n < length xs) ==> decomp (comp xs n) == xs
+
+propDecompLen (xs, y, zs) = decomp (xs, y, zs) == (y:xs ++ zs)
 
 geneticTest :: IO ()
 geneticTest = do
@@ -41,7 +62,7 @@ utilTest = do
         putStr "This should be about 0.5: "
         print d
         let e = (zip [9,8..1] (replicate 9 0))
-        putStrLn (if sort fst e == reverse e then "Sort works!" else "Sort doesn't work.")
+        putStrLn (if ksort fst e == reverse e then "Sort works!" else "Sort doesn't work.")
         putStrLn (if avg 1 0 == 0.5 then "Avg works!" else "Avg doesn't work.")
 
 simulTest :: IO ()
@@ -64,12 +85,12 @@ simulTest = do
         csvHandle <- openFile "./temp1.csv" WriteMode
         hPutStr csvHandle test
         hClose scriptHandle
-        _ <- system "sed -i 's/),(/\\n/g' ./temp1.csv"
-        _ <- system "sed -i 's/,/ /g' ./temp1.csv"
-        _ <- system "sed -i 's/\\[(//g' ./temp1.csv"
-        _ <- system "grep -v 'NaN' ./temp1.csv > ./temp.csv"
-        _ <- system "gnuplot script"
-        _ <- system "rm ./*.csv ./script"
+        command "sed -i 's/),(/\\n/g' ./temp1.csv"
+        command "sed -i 's/,/ /g' ./temp1.csv"
+        command "sed -i 's/\\[(//g' ./temp1.csv"
+        command "grep -v 'NaN' ./temp1.csv > ./temp.csv"
+        command "gnuplot script"
+        command "rm ./*.csv ./script"
         putStrLn "Worked."
 
 pidTest = do

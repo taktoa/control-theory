@@ -12,8 +12,6 @@ evalSim ncfg (state, scfg) = (updateState, scfg)
         f' = last (evaluate ncfg stateList)
         evalState = tupleState (t_, x_, theta_, v_, w_, f')
         updateState = update scfg evalState
---      b = theta state == nan
---      err = error "Simulation went out of bounds!"
 
 neuralSim :: SConfig -> NConfig -> Int -> [SState]
 neuralSim scfg ncfg iters = map fst (take iters (iterate (evalSim ncfg) initSystem))

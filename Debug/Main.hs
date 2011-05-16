@@ -107,4 +107,4 @@ runPIDSim = do
         print init
         --print pcfg
 
-main = runPIDSim
+main = geneticTest
