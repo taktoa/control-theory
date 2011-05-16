@@ -1,4 +1,5 @@
 import PIDImp (runPIDSim)
 import NeuralImp (runNeuralSim)
+import BangBangImp (runBangSim)
 
-main = runNeuralSim
+main = runBangSim

@@ -60,18 +60,10 @@ comp x i
 decomp :: ([a], a, [a]) -> [a]
 decomp (a, b, c) = a ++ [b] ++ c
 
-replace' :: [a] -> Int -> a -> [a]
-replace' x i new = decomp (a, new, b)
+replace :: [a] -> Int -> a -> [a]
+replace x i new = decomp (a, new, b)
         where
         (a, _, b) = comp x i
-
-replace n x
-    | n < 0         = error "Index less than zero!"
-    | otherwise     = go n []
-    where
-    go 0 ys (_:xs) = reverse ys ++ x : xs
-    go n ys (y:xs) = (go $! n-1) (y:ys) xs
-    go _ _ [] = error "Index greater than list length!"
 
 nan = read "NaN"::Double
 

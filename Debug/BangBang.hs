@@ -1,12 +1,14 @@
 module BangBang where
 
+type DBConfig = BConfig Double Double
+
 data (Ord a, Ord b) => BConfig a b = BConfig    {   threshold :: a,
                                                     lowValue :: b,
                                                     highValue :: b
                                                 }
 
-update :: (Ord a, Ord b) => a -> BConfig a b -> b
-update input bcfg
+bEvaluate :: (Ord a, Ord b) => BConfig a b -> a -> b
+bEvaluate bcfg input
         | input >= limen        = high
         | otherwise             = low
         where

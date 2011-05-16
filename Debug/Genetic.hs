@@ -26,17 +26,17 @@ arithCrossover :: Chromosome -> Chromosome -> Chromosome
 arithCrossover = zipWith avg
 
 mutation' :: (RandomInt, RandomDouble) -> Chromosome -> Chromosome
-mutation' (x, y) z = replace' z x y
+mutation' (x, y) z = replace z x y
 
 mutation :: [Chromosome] -> GConfig -> IO [Chromosome]
 mutation chroms cfg = do
-        geneLoc <- randomInt (0, gpc)
+        geneLoc <- randomInt (0, gpc - 1)
         popLoc <- randomInt (0, length chroms - 1)
         mutagen <- randomDouble (0, 1/mweight)
         dRand <- randomDouble (-mrange, mrange)
         let rbool = (mutagen * mweight) > 0.5
         let mutated = mutation' (geneLoc, dRand) (chroms !! popLoc)
-        let output = replace' chroms popLoc mutated
+        let output = replace chroms popLoc mutated
         randomFlush
         return (if rbool then output else chroms)
         where
@@ -103,7 +103,7 @@ generation cfg chroms = do
 
 runGen' :: GConfig -> Int -> [Chromosome] -> IO [Chromosome]
 runGen' cfg 0 chroms = return chroms
-runGen' cfg iters chrom = generation cfg chrom >>= runGen' cfg (iters - 1)
+runGen' cfg i chroms = generation cfg chroms >>= runGen' cfg (i - 1)
 
 runGen :: Int -> GConfig -> IO Chromosome
 runGen iters cfg = do
