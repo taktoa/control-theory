@@ -43,6 +43,7 @@ mutation chrom cfg = do
         let rand = (loc2, dRand)
         mutated <- mutation' rand (chrom !! loc1)
         let output = replace loc2 mutated chrom
+        randomFlush
         return (if rbool then output else chrom)
 
 selection :: [Chromosome] -> GConfig -> Population
