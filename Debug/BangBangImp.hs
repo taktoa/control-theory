@@ -40,18 +40,14 @@ runBangSim = do
             scfg = protoConfig (0.125, 1, 1, 2, 10, initState)
             bIters = 300
         bcfg <- bangGenetic scfg
-        putStrLn "a"
         let bang = bangSim scfg bcfg bIters
             fitness = bangFitness bIters scfg bcfg
             disp = (average (map theta bang))
         args <- getArgs
-        putStrLn "b"
         let fitnessFile:trackFile:_ = args
         fitnessHandle <- openFile fitnessFile WriteMode
-        hPutStr fitnessHandle (show disp ++ ", " ++ show fitness ++ ", \"" ++ show bcfg ++ "\", ")
+        hPutStr fitnessHandle (show disp ++ ", " ++ show fitness ++ ", \"" ++ show bcfg ++ "\", ") -- <<loop>> originates here
         hClose fitnessHandle
-        putStrLn "c"
         trackHandle <- openFile trackFile WriteMode
         hPrint trackHandle bang
         hClose trackHandle
-        putStrLn "d"
