@@ -87,7 +87,7 @@ makeInitChroms' :: GConfig -> [Chromosome] -> Integer -> IO [Chromosome]
 makeInitChroms' _ xs 0 = return xs
 makeInitChroms' cfg chroms x = do
             rlist <- randomDoubleList popSize range
-            --randomFlush
+            randomFlush
             makeInitChroms' cfg (zipWith (:) rlist chroms) (x - 1)
             where
             GConfig _ _ _ _ pop _ range _ = cfg
