@@ -109,5 +109,5 @@ runGen :: Int -> GConfig -> IO Chromosome
 runGen iters cfg = do
             initchroms <- (makeInitChroms cfg)
             chroms <- runGen' cfg iters initchroms
-            let spop = (ksort snd (chromsToPop chroms cfg))
-            return (fst (head spop))
+            let bestOrg = (kminimum snd (chromsToPop chroms cfg))
+            return (fst bestOrg)

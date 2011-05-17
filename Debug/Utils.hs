@@ -2,7 +2,7 @@ module Utils where
 import Control.Exception
 import System.Random
 import System
-import Data.List.Key (sort)
+import Data.List.Key (sort, minimum)
 
 type RandomInt = Int
 type RandomDouble = Double
@@ -51,6 +51,9 @@ average a = sum a / fromIntegral (length a)
 
 ksort :: Ord b => (a -> b) -> [a] -> [a]
 ksort = Data.List.Key.sort
+
+kminimum :: Ord b => (a -> b) -> [a] -> a
+kminimum = Data.List.Key.minimum
 
 comp :: [a] -> Int -> ([a], a, [a])
 comp x i
