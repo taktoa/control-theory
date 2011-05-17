@@ -1,4 +1,5 @@
 module Utils where
+import Control.Exception
 import System.Random
 import System
 import Data.List.Key (sort)
@@ -30,13 +31,15 @@ randomIntList :: Int -> RandomIntRange -> IO RandomIntList
 randomIntList size range = do
             stdGen <- getStdGen
             let randInfList = randomRs range stdGen
-            return (take size randInfList)
+                resultList = take size randInfList
+            evaluate (return $! sum resultList)
 
 randomDoubleList :: Int -> RandomDoubleRange -> IO RandomDoubleList
 randomDoubleList size range = do
             stdGen <- getStdGen
             let randInfList = randomRs range stdGen
-            return (take size randInfList)
+                resultList = (take size randInfList)
+            evaluate (return $! sum resultList)
 
 randomFlush :: IO ()
 randomFlush = newStdGen >>= setStdGen
