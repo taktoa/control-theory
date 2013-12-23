@@ -14,10 +14,7 @@ pid :: [a] -> Int -> PConfig a -> [a]
 pid _ 0 _ = []
 pid err n cfg = f (derivative + integral + proportional) (head err) : pid err (n - 1) cfg
     where
-    k_i = integralWeight cfg
-    k_d = derivWeight cfg
-    k_p = propWeight cfg
-    step = timeStep cfg
+    PConfig k_i k_d k_p step = cfg
     f = function cfg
     inp = map (toInput cfg) err
     derivative = (head inp - neck inp) * k_d / step
